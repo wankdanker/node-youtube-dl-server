@@ -1,0 +1,9 @@
+[submodule "connect"]
+	path = connect
+	url = https://github.com/senchalabs/connect.git
+[submodule "node-querystring"]
+	path = node-querystring
+	url = https://github.com/visionmedia/node-querystring.git
+[submodule "node-mime"]
+	path = node-mime
+	url = https://github.com/bentomas/node-mime.git
