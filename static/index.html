@@ -1,8 +1,52 @@
 <html>
-<body>
-<form action="/add">
-<input name="url"  />
-<button>Submit</button>
-</form>
+<head>
+<style>
+body {
+	font-family: verdana, arial, helvetica, sans-serif;
+}
+
+input { 
+
+	width : 90%;
+	font-family: verdana, arial, helvetica, sans-serif;
+	padding : 5px;
+	font-size : 14pt;
+
+}
+
+.bold {
+	font-weight: bold;
+	padding : 15px;
+}
+
+.roundedCorner {
+	-moz-border-radius-topleft:  10px;
+	-moz-border-radius-topright:  10px;
+	-moz-border-radius-bottomleft:  10px;
+	-moz-border-radius-bottomright:  10px;
+	-webkit-border-top-left-radius:  10px;
+	-webkit-border-top-right-radius:  10px;
+	-webkit-border-bottom-left-radius:  10px;
+	-webkit-border-bottom-right-radius:  10px;
+}
+
+
+</style>
+</head>
+<body style="height:100%">
+
+<table width="100%" height="100%">
+	<tr>
+		<td align="center" valign="middle">
+			<div style="border: black 2px solid; background-color: #dddddd; display: inline-block; padding: 20px;" class="roundedCorner">
+				<div class="bold">Paste the URL of the Youtube video you would like to download here:</div>
+				<form action="/add">
+					<div><input name="url" /></div>
+					<div><button>Queue it Up!</button></div>
+				</form>
+			</div>
+		</td>
+	</tr>
+</table>
 </body>
 </html>
