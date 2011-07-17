@@ -51,11 +51,17 @@ $(document).ready(function () {
 	});
 
 	socket.on('updateQueue', function (data) {
-		$('#queue').html(JSON.stringify(data));
+		$('#queue').html('');
+		
+		data.forEach(function (request) {
+			var $div = $('<div />').appendTo('#queue')
+				.append($('<img />').attr('src', request.thumbnail))
+				.append(request.title);
+		});
 	});	
 
 	socket.on('updateStatus', function (data) {
-		$('#status').html(JSON.stringify(data));
+		$('#status').html(data.message);
 	});
 
 	socket.emit('ready');

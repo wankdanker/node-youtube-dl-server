@@ -36,14 +36,16 @@ setInterval(function () {
 
 io.sockets.on('connection', function (socket) {
 	socket.on('add', function ( request ) {
-		queue.push(request);
+		getFileDetails(request, function () {
+			queue.push(request);
 
-		if (!downloading) {
-			downloadFile(queue.shift());
-		}
-		else {
-			io.sockets.emit('updateQueue', queue);
-		}
+			if (!downloading) {
+				downloadFile(queue.shift());
+			}
+			else {
+				io.sockets.emit('updateQueue', queue);
+			}
+		});
 	});
 
 	socket.on('ready', function () {
@@ -60,6 +62,12 @@ function downloadFile(query) {
 	}
 }
 
+function getFileDetails(query, callback) {
+	if (/youtube/gi.test(query.url)) {
+		getFileDetailsFromYouTube(query, callback);
+	}
+}
+
 function downloadFromYouTube(query) {
 	var proc = spawn('youtube-dl'
 		, ['-t', '--cookies=cookies.txt', '--max-quality=37', query.url],
@@ -72,7 +80,10 @@ function downloadFromYouTube(query) {
 	
 	proc.stdout.on('data', function (data) {
 		console.log('stdout: ' + data);
-		status = data.toString();
+		status = {
+			file : query,
+			message : data.toString()
+		};
 	});
 
 	proc.stderr.on('data', function (data) {
@@ -86,5 +97,28 @@ function downloadFromYouTube(query) {
 		if (queue.length) {
 			downloadFile(queue.shift());
 		}
+	});
+}
+
+function getFileDetailsFromYouTube(query, callback) {
+	var buffer = [];
+
+	var proc = spawn('youtube-dl'
+		, ['--get-title', '--get-url', '--get-description', '--get-thumbnail', query.url]
+	);
+
+	proc.stdout.on('data', function (data) {
+		buffer.push(data.toString());
+	});
+
+	proc.on('exit', function (code) {
+		var data = buffer.join('\n').split('\n');
+		
+		query.title = data[0];
+		query.downloadUrl = data[1];
+		query.thumbnail = data[2];
+		query.description = data[3];
+
+		callback(query);
 	});
 }
