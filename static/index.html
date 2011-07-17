@@ -32,6 +32,38 @@ input {
 
 
 </style>
+<script src="http://code.jquery.com/jquery-1.6.2.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script language="javascript">
+
+var socket = io.connect("http://kubuntu-01:3001");
+
+$(document).ready(function () {
+	$('#cmdAdd').click(function () {
+		var request = {};
+		
+		$('#frm').find('input').each(function () {
+			request[this.name] = $(this).val();
+		});
+		
+		socket.emit('add', request);
+		return false;
+	});
+
+	socket.on('updateQueue', function (data) {
+		$('#queue').html(JSON.stringify(data));
+	});	
+
+	socket.on('updateStatus', function (data) {
+		$('#status').html(JSON.stringify(data));
+	});
+
+	socket.emit('ready');
+});
+
+
+
+</script>
 </head>
 <body style="height:100%">
 
@@ -40,11 +72,13 @@ input {
 		<td align="center" valign="middle">
 			<div style="border: black 2px solid; background-color: #dddddd; display: inline-block; padding: 20px;" class="roundedCorner">
 				<div class="bold">Paste the URL of the Youtube video you would like to download here:</div>
-				<form action="/add">
+				<form id="frm">
 					<div><input name="url" /></div>
-					<div><button>Queue it Up!</button></div>
+					<div><button id="cmdAdd">Queue it Up!</button></div>
 				</form>
 			</div>
+			<div id="queue"></div>
+			<div id="status"></div>
 		</td>
 	</tr>
 </table>

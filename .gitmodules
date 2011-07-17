@@ -7,3 +7,6 @@
 [submodule "node-mime"]
 	path = node-mime
 	url = https://github.com/bentomas/node-mime.git
+[submodule "node-socket.io"]
+	path = node-socket.io
+	url = https://github.com/LearnBoost/socket.io.git
