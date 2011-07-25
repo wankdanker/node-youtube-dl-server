@@ -30,13 +30,20 @@ input {
 	-webkit-border-bottom-right-radius:  10px;
 }
 
+#queue {
+	text-align : left;
+}
+
+#queue img {
+	margin : 5px;
+}
 
 </style>
 <script src="http://code.jquery.com/jquery-1.6.2.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script language="javascript">
 
-var socket = io.connect("http://kubuntu-01:3001");
+var socket = io.connect("http://192.168.1.177:3001");
 
 $(document).ready(function () {
 	$('#cmdAdd').click(function () {
@@ -46,13 +53,20 @@ $(document).ready(function () {
 			request[this.name] = $(this).val();
 		});
 		
+		$('#cmdAdd').add('#txtURL').attr('disabled', true);
+		
 		socket.emit('add', request);
 		return false;
 	});
 
+	socket.on('addResponse', function (data) {
+		$('#txtURL').val('');
+		$('#cmdAdd').add('#txtURL').attr('disabled', false);
+	});
+	
 	socket.on('updateQueue', function (data) {
 		$('#queue').html('');
-		
+		console.log(data);	
 		data.forEach(function (request) {
 			var $div = $('<div />').appendTo('#queue')
 				.append($('<img />').attr('src', request.thumbnail))
@@ -61,6 +75,7 @@ $(document).ready(function () {
 	});	
 
 	socket.on('updateStatus', function (data) {
+		//console.log(data);
 		$('#status').html(data.message);
 	});
 
@@ -71,22 +86,21 @@ $(document).ready(function () {
 
 </script>
 </head>
-<body style="height:100%">
+<body>
 
-<table width="100%" height="100%">
-	<tr>
-		<td align="center" valign="middle">
-			<div style="border: black 2px solid; background-color: #dddddd; display: inline-block; padding: 20px;" class="roundedCorner">
-				<div class="bold">Paste the URL of the Youtube video you would like to download here:</div>
-				<form id="frm">
-					<div><input name="url" /></div>
-					<div><button id="cmdAdd">Queue it Up!</button></div>
-				</form>
-			</div>
+<div style="text-align:center;">
+	<div style="border: black 2px solid; background-color: #dddddd; width : 90%; display: inline-block; padding: 20px;" class="roundedCorner">
+		<div class="bold">Paste the URL of the Youtube video you would like to download here:</div>
+			<form id="frm">
+				<div><input name="url" id="txtURL" /></div>
+				<div><button id="cmdAdd">Queue it Up!</button></div>
+			</form>
+			<pre id="status"></pre>
+		</div>
+		<div style="border: black 2px solid; width:90%; display: inline-block; padding: 20px; margin-top: 10px;" class="roundedCorner">
+			<div class="bold">Queued:</div>
 			<div id="queue"></div>
-			<div id="status"></div>
-		</td>
-	</tr>
-</table>
+		</div>
+</div>
 </body>
 </html>

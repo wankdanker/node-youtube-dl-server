@@ -18,7 +18,7 @@ var status = "Nothing.";
 
 var server = connect.createServer();
 var io = require('socket.io').listen(server);
-io.set('log level', 1);
+io.set('log level', 0);
 
 
 server.use(
@@ -38,6 +38,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('add', function ( request ) {
 		getFileDetails(request, function () {
 			queue.push(request);
+			socket.emit('addResponse', { success : true });
 
 			if (!downloading) {
 				downloadFile(queue.shift());
@@ -60,11 +61,48 @@ function downloadFile(query) {
 	if (/youtube/gi.test(query.url)) {
 		downloadFromYouTube(query)
 	}
+	else {
+		downloadGeneric(query);
+	}
+}
+
+function downloadGeneric(query) {
+	var proc = spawn('wget'
+		, ['--progress=bar:force', query.url]
+		, {
+			cwd : downloadPath
+		}
+	);
+
+	downloading = true;
+
+	proc.stderr.on('data', function (data) {
+		console.log(data.toString());
+		
+		status = {
+			file : query,
+			message : data.toString()
+		};
+	});
+
+	proc.on('exit', function (code) {
+		downloading = false;
+		
+		if (queue.length) {
+			downloadFile(queue.shift());
+		}
+	});
 }
 
 function getFileDetails(query, callback) {
 	if (/youtube/gi.test(query.url)) {
 		getFileDetailsFromYouTube(query, callback);
+	}
+	else {
+
+		query.title = query.url;
+		query.description = query.url;
+		callback(null, query);
 	}
 }
 
