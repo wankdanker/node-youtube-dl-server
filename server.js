@@ -20,12 +20,7 @@ var server = connect.createServer();
 var io = require('socket.io').listen(server);
 io.set('log level', 0);
 
-
-server.use(
-	connect.query()
-)
-
-.use(  	
+server.use(  	
 	connect.static(__dirname + '/static')
 )
 .listen(3001);
