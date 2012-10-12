@@ -6,31 +6,33 @@
  * 
  */
 
-var connect = require('connect'),
-	 fs = require('fs')
-	 spawn = require('child_process').spawn;
-	 
-var queue = [], downloading = false;
+var express = require('express')
+	, app = express()
+	, http = require('http')
+	, server = http.createServer(app)
+	, io = require('socket.io').listen(server)
+	, fs = require('fs')
+	, spawn = require('child_process').spawn
+	, queue = []
+	, downloading = false
+	, downloadPath = "./"
+	, status = "Nothing."
+	;
 
-var downloadPath = "/mnt/media2/Video/Music Videos";
-var status = "Nothing.";
-
-
-var server = connect.createServer();
-var io = require('socket.io').listen(server);
 io.set('log level', 0);
 
-server.use(  	
-	connect.static(__dirname + '/static')
-)
-.listen(3001);
+app.use(express.static(__dirname + '/static'))
+
+server.listen(3001);
 
 setInterval(function () {
 	io.sockets.emit('updateStatus', status);
 }, 1000);
 
 io.sockets.on('connection', function (socket) {
+	console.log('socket.connection');
 	socket.on('add', function ( request ) {
+		console.log('socket.add');
 		getFileDetails(request, function () {
 			queue.push(request);
 			socket.emit('addResponse', { success : true });

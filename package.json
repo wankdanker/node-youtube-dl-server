@@ -1,5 +1,5 @@
 {
-  "name": "youtube-dl",
+  "name": "youtube-dl-frontend",
   "version": "0.1.0",
   "description": "A web frontend for youtube-dl",
   "main": "server.js",
